@@ -1,6 +1,18 @@
 HELP.md
+
+### Git ###
+.git/
+
+### Maven ###
 target/
-.mvn/wrapper/maven-wrapper.jar
+.mvn/
+mvnw
+mvnw.cmd
+
+### macOS ###
+.DS_Store
+**/.DS_Store
+
 !**/src/main/**/target/
 !**/src/test/**/target/
 
