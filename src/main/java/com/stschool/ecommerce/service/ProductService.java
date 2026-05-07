@@ -31,19 +31,19 @@ public interface ProductService {
     List<Product> getProductsByPriceGreaterThan(int price);
 
     //Get names of all products
-    List<String> getAllProductsName();
+    List<String> getAllProductNames();
 
     //Count how many products are available
     long getTotalProductsCount();
 
     //Check if there is any product from a given company
-    boolean existsProductsByCompany(String company);
+    boolean hasProductFromCompany(String company);
 
     //Check if all products are available
     boolean areAllProductsAvailable();
 
     //Get the first product safely
-    Optional<Product> getFirstProduct();
+    Optional<Product> findFirstProduct();
 
     //Get all unique categories
     List<String> getDistinctCategories();
@@ -63,8 +63,6 @@ public interface ProductService {
     //Get total price after applying discounts
     BigDecimal calculateFinalPrice(Product product);
 
-    BigDecimal calculateTotalFinalPrice(List<Product> products);
-
     //Get all products manufactured after a given year
     List<Product> getProductsManufacturedAfter(int year);
 
@@ -76,29 +74,25 @@ public interface ProductService {
     List<Product> getAvailableProductsWithPriceGreaterThan(double price);
 
     //Count number of products in each category
-    Map<String, Long> getProductsCountFromCategory();
+    Map<String, Long> countProductsByCategory();
 
     //Group all products by category
-    Map<String, List<Product>> getProductsGroupedByCategory();
+    Map<String, List<Product>> groupProductsByCategory();
 
     //Group all products by company
-    Map<String, List<Product>> getProductsGroupedByCompany();
+    Map<String, List<Product>> groupProductsByCompany();
 
     /* Partition products into:
     - available
     - unavailable
      */
-    Map<Boolean, List<Product>> getProductsPartitionedByAvailability();
+    Map<Boolean, List<Product>> partitionByAvailability();
 
     //Find the most expensive product
-    Optional<Product> getProductWithHighestPrice();
-
-    List<Product> getProductsWithHighestPrice();
+    Product getMaxPricedProduct();
 
     //Find the cheapest product
-    Optional<Product> getProductWithLowestPrice();
-
-    List<Product> getProductsWithLowestPrice();
+    Product getMinPricedProduct();
 
     //Create a Map of product ID to Product
     Optional<Product> getProductById(int id);

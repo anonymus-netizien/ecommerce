@@ -2,6 +2,7 @@ HELP.md
 
 ### Git ###
 .git/
+.gitattributes
 
 ### Maven ###
 target/

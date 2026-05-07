@@ -12,6 +12,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Service
@@ -81,7 +82,7 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public List<String> getAllProductsName() {
+    public List<String> getAllProductNames() {
         return productRepository.findAll()
                 .stream()
                 .map(Product::getName)
@@ -97,7 +98,7 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public boolean existsProductsByCompany(String company) {
+    public boolean hasProductFromCompany(String company) {
         return productRepository.findAll()
                 .stream()
                 .anyMatch(product -> product.getCompany().equals(company));
@@ -111,7 +112,7 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public Optional<Product> getFirstProduct() {
+    public Optional<Product> findFirstProduct() {
         return productRepository.findAll()
                 .stream()
                 .findFirst();
@@ -171,13 +172,6 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public BigDecimal calculateTotalFinalPrice(List<Product> products) {
-        return products.stream()
-                .map(this::calculateFinalPrice)
-                .reduce(BigDecimal.ZERO, BigDecimal::add);
-    }
-
-    @Override
     public List<Product> getProductsManufacturedAfter(int year) {
         return productRepository.findAll()
                 .stream()
@@ -194,69 +188,45 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public Map<String, Long> getProductsCountFromCategory() {
+    public Map<String, Long> countProductsByCategory() {
         return productRepository.findAll()
                 .stream()
                 .collect(Collectors.groupingBy(Product::getCategory, Collectors.counting()));
     }
 
     @Override
-    public Map<String, List<Product>> getProductsGroupedByCategory() {
+    public Map<String, List<Product>> groupProductsByCategory() {
         return productRepository.findAll()
                 .stream()
                 .collect(Collectors.groupingBy(Product::getCategory, Collectors.toList()));
     }
 
     @Override
-    public Map<String, List<Product>> getProductsGroupedByCompany() {
+    public Map<String, List<Product>> groupProductsByCompany() {
         return productRepository.findAll()
                 .stream()
                 .collect(Collectors.groupingBy(Product::getCompany, Collectors.toList()));
     }
 
     @Override
-    public Map<Boolean, List<Product>> getProductsPartitionedByAvailability() {
+    public Map<Boolean, List<Product>> partitionByAvailability() {
         return productRepository.findAll()
                 .stream()
                 .collect(Collectors.partitioningBy(Product::isAvailable));
     }
 
     @Override
-    public Optional<Product> getProductWithHighestPrice() {
-        return productRepository.findAll()
-                .stream()
-                .max(Comparator.comparingInt(Product::getMaxRetailPrice));
-    }
-
-    @Override
-    public List<Product> getProductsWithHighestPrice() {
-        int maxPrice = productRepository.findAll().stream()
-                .mapToInt(Product::getMaxRetailPrice)
-                .max()
-                .orElse(0);
-
+    public Product getMaxPricedProduct() {
         return productRepository.findAll().stream()
-                .filter(product -> product.getMaxRetailPrice() == maxPrice)
-                .toList();
+                .max(Comparator.comparing(Product::getMaxRetailPrice))
+                .orElseThrow(() -> new ProductNotFoundException("No products available"));
     }
 
     @Override
-    public Optional<Product> getProductWithLowestPrice() {
-        return productRepository.findAll()
-                .stream()
-                .min(Comparator.comparingInt(Product::getMaxRetailPrice));
-    }
-
-    @Override
-    public List<Product> getProductsWithLowestPrice() {
-        int minPrice = productRepository.findAll().stream()
-                .mapToInt(Product::getMaxRetailPrice)
-                .min()
-                .orElse(0);
-
+    public Product getMinPricedProduct() {
         return productRepository.findAll().stream()
-                .filter(product -> product.getMaxRetailPrice() == minPrice)
-                .toList();
+                .min(Comparator.comparingInt(Product::getMaxRetailPrice))
+                .orElseThrow(() -> new ProductNotFoundException("No products available"));
     }
 
     @Override
@@ -268,7 +238,7 @@ public class ProductServiceImpl implements ProductService {
     public Map<Integer, Product> getProductMapById() {
         return productRepository.findAll()
                 .stream()
-                .collect(Collectors.toMap(Product::getId, p -> p));
+                .collect(Collectors.toMap(Product::getId, Function.identity()));
     }
 
     @Override
