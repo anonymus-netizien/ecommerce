@@ -28,11 +28,10 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public Product save(Product product) throws ProductExistsException {
         //Checks if Product already exists by id
-        productRepository.findById(product.getId()).ifPresent(p -> {
+        productRepository.findByName(product.getName()).ifPresent(p -> {
             throw new ProductExistsException("Product with id " + product.getId() + " already exists");
         });
         return productRepository.save(product);
-
     }
 
     @Override
@@ -47,14 +46,13 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public Product update(int id, Product product) throws ProductNotFoundException {
-        productRepository.findById(id).orElseThrow(() -> new ProductNotFoundException("Product with id " + id + " not found"));
-        return productRepository.update(id, product);
+        productRepository.findById(product.getId()).orElseThrow(() -> new ProductNotFoundException("Product with id " + id + " not found"));
+        return productRepository.save(product);
     }
 
     @Override
     public void delete(int id) throws ProductNotFoundException {
-        productRepository.findById(id).orElseThrow(() -> new ProductNotFoundException("Product with id " + id + " not found"));
-        productRepository.delete(id);
+        productRepository.delete(productRepository.findById(id).orElseThrow(() -> new ProductNotFoundException("Product with id " + id + " not found")));
     }
 
     @Override

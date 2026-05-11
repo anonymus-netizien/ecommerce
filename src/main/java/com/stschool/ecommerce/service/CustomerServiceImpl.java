@@ -22,7 +22,7 @@ public class CustomerServiceImpl implements CustomerService {
     // CREATE
     @Override
     public Customer registerCustomer(Customer customer) throws CustomerExistsException {
-        if (customerRepository.exists(customer.getEmail())) {
+        if (customerRepository.existsByEmail(customer.getEmail())) {
             throw new CustomerExistsException("Customer already exists with email: " + customer.getEmail());
         }
         return customerRepository.save(customer);
@@ -51,7 +51,7 @@ public class CustomerServiceImpl implements CustomerService {
     @Override
     public Customer save(Customer customer) throws CustomerExistsException {
         // 1. Check if email already exists
-        if (customerRepository.exists(customer.getEmail())) {
+        if (customerRepository.existsByEmail(customer.getEmail())) {
             throw new CustomerExistsException(
                     "Customer already exists with email: " + customer.getEmail());
         }
@@ -82,26 +82,25 @@ public class CustomerServiceImpl implements CustomerService {
 
         // Optional: prevent duplicate email
         if (!existing.getEmail().equalsIgnoreCase(customer.getEmail()) &&
-                customerRepository.exists(customer.getEmail())) {
+                customerRepository.existsByEmail(customer.getEmail())) {
             throw new RuntimeException("Email already in use " + customer.getEmail());
         }
-        return customerRepository.update(customer)
-                .orElseThrow(() -> new CustomerNotFoundException("Customer not found with this id " + id));
+        return customerRepository.save(customer);
     }
 
     // DELETE
     @Override
-    public void delete(int id) {
-        boolean deleted = customerRepository.delete(id);
+    public void delete(int id) throws CustomerNotFoundException {
+        Customer customer = customerRepository.findById(id)
+                .orElseThrow(() ->
+                        new CustomerNotFoundException("Customer with id " + id + " not found"));
 
-        if (!deleted) {
-            throw new CustomerNotFoundException("Customer with id " + id + " not found");
-        }
+        customerRepository.delete(customer);
     }
 
     @Override
     public boolean exists(String email) throws CustomerNotFoundException {
-        return this.customerRepository.exists(email);
+        return this.customerRepository.existsByEmail(email);
     }
 
     @Override
@@ -126,7 +125,7 @@ public class CustomerServiceImpl implements CustomerService {
 
             // update last login
             customer.setLastLoggedIn(LocalDateTime.now());
-            customerRepository.update(customer);
+            customerRepository.save(customer);
             return customer;
 
         } catch (Exception e) {
