@@ -1,6 +1,5 @@
 package com.stschool.ecommerce.controller;
 
-import com.stschool.ecommerce.exception.CustomerNotFoundException;
 import com.stschool.ecommerce.model.Customer;
 import com.stschool.ecommerce.model.LoginCredentials;
 import com.stschool.ecommerce.service.AuthService;
@@ -29,7 +28,7 @@ public class AuthController {
     }
 
     @GetMapping("/customers/by-email")
-    public Customer getCustomerByEmail(@RequestParam String email) throws CustomerNotFoundException {
+    public Customer getCustomerByEmail(@RequestParam String email) {
         return authService.getCustomerByEmail(email);
     }
 }
