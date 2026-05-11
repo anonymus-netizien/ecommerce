@@ -10,6 +10,9 @@ target/
 mvnw
 mvnw.cmd
 
+### Local application config ###
+src/main/resources/application-local.properties
+
 ### macOS ###
 .DS_Store
 **/.DS_Store

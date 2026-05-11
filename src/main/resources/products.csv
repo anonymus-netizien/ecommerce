@@ -1,0 +1,51 @@
+name,maxRetailPrice,discountPercentage,rating,isAvailable,company,category,manufacturedYear
+iPhone 14,79999,10,4,TRUE,Apple,Electronics,2023
+Galaxy S23,74999,12,5,TRUE,Samsung,Electronics,2023
+MacBook Air M2,119999,8,3,TRUE,Apple,Electronics,2022
+Dell XPS 13,99999,15,4,TRUE,Dell,Electronics,2022
+HP Pavilion Laptop,65999,18,5,TRUE,HP,Electronics,2021
+Sony Bravia 55 TV,89999,20,3,TRUE,Sony,Electronics,2022
+LG OLED TV,129999,22,4,FALSE,LG,Electronics,2023
+Boat Rockerz Headphones,2999,30,5,TRUE,Boat,Electronics,2023
+JBL Bluetooth Speaker,4999,25,3,TRUE,JBL,Electronics,2022
+Mi Smart Watch,6999,28,4,TRUE,Xiaomi,Electronics,2023
+Levis Jeans,2499,35,5,TRUE,Levis,Clothing,2022
+Nike Running Shoes,5999,20,3,TRUE,Nike,Clothing,2023
+Adidas T-Shirt,1999,25,4,TRUE,Adidas,Clothing,2023
+Puma Jacket,3999,30,5,FALSE,Puma,Clothing,2022
+Allen Solly Shirt,2999,18,3,TRUE,Allen Solly,Clothing,2021
+Woodland Shoes,5499,22,4,TRUE,Woodland,Clothing,2022
+Peter England Trousers,2799,15,5,TRUE,Peter England,Clothing,2021
+Raymond Suit,8999,10,3,TRUE,Raymond,Clothing,2022
+Fastrack Watch,1999,40,4,TRUE,Fastrack,Accessories,2023
+Titan Watch,5999,15,5,TRUE,Titan,Accessories,2022
+Rolex Watch,499999,5,3,FALSE,Rolex,Accessories,2021
+American Tourister Bag,3499,25,4,TRUE,Samsonite,Accessories,2023
+Wildcraft Backpack,1999,30,5,TRUE,Wildcraft,Accessories,2022
+Philips Air Fryer,7999,20,3,TRUE,Philips,Home Appliances,2023
+Prestige Pressure Cooker,2999,15,4,TRUE,Prestige,Home Appliances,2022
+IFB Washing Machine,25999,18,5,TRUE,IFB,Home Appliances,2021
+LG Refrigerator,45999,12,3,TRUE,LG,Home Appliances,2022
+Samsung Microwave,11999,22,4,TRUE,Samsung,Home Appliances,2023
+Voltas AC 1.5 Ton,38999,20,5,FALSE,Voltas,Home Appliances,2022
+Havells Mixer Grinder,4999,25,3,TRUE,Havells,Home Appliances,2023
+Orient Ceiling Fan,2999,28,4,TRUE,Orient,Home Appliances,2021
+Redmi Note 12,17999,15,5,TRUE,Xiaomi,Electronics,2023
+OnePlus 11,56999,10,3,TRUE,OnePlus,Electronics,2023
+Realme Narzo,12999,20,4,TRUE,Realme,Electronics,2022
+Asus Gaming Laptop,89999,18,5,TRUE,Asus,Electronics,2023
+Acer Aspire 5,54999,22,3,TRUE,Acer,Electronics,2022
+Lenovo ThinkPad,79999,12,4,TRUE,Lenovo,Electronics,2021
+Noise Smartwatch,3999,35,5,TRUE,Noise,Electronics,2023
+Fire-Boltt Watch,2999,40,3,TRUE,Fire-Boltt,Electronics,2023
+Campus Shoes,1999,30,4,TRUE,Campus,Clothing,2023
+HRX T-Shirt,1499,25,5,TRUE,HRX,Clothing,2022
+Zara Jacket,6999,20,3,FALSE,Zara,Clothing,2023
+H&M Hoodie,2999,18,4,TRUE,H&M,Clothing,2022
+Decathlon Sports Shoes,3499,22,5,TRUE,Decathlon,Clothing,2023
+Apple AirPods Pro,24999,10,3,TRUE,Apple,Electronics,2023
+Sony PlayStation 5,49999,5,4,FALSE,Sony,Electronics,2022
+Microsoft Xbox Series X,47999,7,5,TRUE,Microsoft,Electronics,2022
+Canon DSLR Camera,59999,15,3,TRUE,Canon,Electronics,2021
+Nikon Mirrorless Camera,69999,12,4,TRUE,Nikon,Electronics,2022
+Epson Printer,12999,20,5,TRUE,Epson,Electronics,2023
