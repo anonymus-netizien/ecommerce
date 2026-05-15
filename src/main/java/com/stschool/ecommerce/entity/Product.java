@@ -1,4 +1,4 @@
-package com.stschool.ecommerce.model;
+package com.stschool.ecommerce.entity;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;

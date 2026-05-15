@@ -1,9 +1,13 @@
 package com.stschool.ecommerce.service;
 
+import com.stschool.ecommerce.dto.ProductDto;
+import com.stschool.ecommerce.entity.Product;
 import com.stschool.ecommerce.exception.ProductExistsException;
 import com.stschool.ecommerce.exception.ProductNotFoundException;
-import com.stschool.ecommerce.model.Product;
 import com.stschool.ecommerce.repository.ProductRepository;
+import com.stschool.ecommerce.util.ProductMapper;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -18,10 +22,12 @@ import java.util.stream.Collectors;
 @Service
 public class ProductServiceImpl implements ProductService {
     private final ProductRepository productRepository;
+    private final ProductMapper productMapper;
 
     //Dependency
-    public ProductServiceImpl(ProductRepository productRepository) {
+    public ProductServiceImpl(ProductRepository productRepository, ProductMapper productMapper) {
         this.productRepository = productRepository;
+        this.productMapper = productMapper;
     }
 
     //Overriding Repository Methods
@@ -56,213 +62,184 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public List<Product> getAllProductsByAvailability(boolean available) {
-        return productRepository.findAll()
+    public List<ProductDto> getAllProductsByAvailability(boolean available) {
+        return productRepository.findProductsByIsAvailable(available)
                 .stream()
-                .filter(product -> product.isAvailable() == available)
+                .map(productMapper::toDto)
                 .toList();
     }
 
     @Override
-    public List<Product> getProductsByCategory(String category) {
-        return productRepository.findAll()
-                .stream()
-                .filter(product -> product.getCategory().equals(category))
+    public List<ProductDto> getProductsByCategory(String category) {
+        return productRepository.findProductsByCategory(category)
+                .stream().map(productMapper::toDto)
                 .toList();
     }
 
     @Override
-    public List<Product> getProductsByPriceGreaterThan(int price) {
-        return productRepository.findAll()
-                .stream()
-                .filter(product -> product.getMaxRetailPrice() > price)
+    public List<ProductDto> getProductsByPriceGreaterThan(int price) {
+        return productRepository.findProductsByMaxRetailPriceGreaterThan(price)
+                .stream().map(productMapper::toDto)
                 .toList();
     }
 
     @Override
     public List<String> getAllProductNames() {
-        return productRepository.findAll()
-                .stream()
-                .map(Product::getName)
-                .toList();
+        return productRepository.findAllProductNames();
     }
 
     @Override
     public long getTotalProductsCount() {
-        return productRepository.findAll()
-                .stream()
-                .filter(Product::isAvailable)
-                .count();
+        return productRepository.count();
     }
 
     @Override
     public boolean hasProductFromCompany(String company) {
-        return productRepository.findAll()
-                .stream()
-                .anyMatch(product -> product.getCompany().equals(company));
+        return productRepository.existsByCompanyIgnoreCase(company);
     }
 
     @Override
     public boolean areAllProductsAvailable() {
-        return productRepository.findAll()
-                .stream()
-                .allMatch(Product::isAvailable);
+        return productRepository.areAllProductsAvailable();
     }
 
     @Override
     public Optional<Product> findFirstProduct() {
-        return productRepository.findAll()
-                .stream()
-                .findFirst();
+        return productRepository.findFirstByIsAvailableTrue();
     }
 
     @Override
     public List<String> getDistinctCategories() {
-        return productRepository.findAll()
-                .stream()
-                .map(Product::getCategory)
-                .map(String::toLowerCase)
-                .distinct()
+        return productRepository.findDistinctCategories();
+    }
+
+    @Override
+    public List<ProductDto> getTopNMostExpensiveProducts(int limit) {
+        return productRepository.findByOrderByMaxRetailPriceDesc(
+                        PageRequest.of(0, limit))
+                .stream().map(productMapper::toDto)
                 .toList();
     }
 
     @Override
-    public List<Product> getTopNMostExpensiveProducts(int limit) {
-        return productRepository.findAll()
-                .stream()
-                .sorted(Comparator.comparingInt(Product::getMaxRetailPrice).reversed())
-                .limit(limit)
+    public List<ProductDto> getProductsSortedByPriceAsc() {
+        return productRepository.findByOrderByMaxRetailPriceAsc()
+                .stream().map(productMapper::toDto)
                 .toList();
     }
 
     @Override
-    public List<Product> getProductsSortedByPriceAsc() {
-        return productRepository.findAll()
-                .stream()
-                .sorted(Comparator.comparingInt(Product::getMaxRetailPrice))
+    public List<ProductDto> getProductsSortedByNameDesc() {
+        return productRepository.findByOrderByNameDesc()
+                .stream().map(productMapper::toDto)
                 .toList();
     }
 
     @Override
-    public List<Product> getProductsSortedByNameDesc() {
-        return productRepository.findAll()
-                .stream()
-                .sorted(Comparator.comparing(p -> p.getName().toLowerCase(), Comparator.reverseOrder()))
-                .toList();
+    public BigDecimal getTotalInventoryValue() {
+        return productRepository.calculateTotalInventoryValue();
     }
 
     @Override
-    public double calculateTotalInventoryValue() {
-        return productRepository.findAll()
-                .stream()
-                .mapToDouble(Product::getMaxRetailPrice).sum();
-    }
+    public BigDecimal calculateFinalPrice(int id) {
+        Product product = productRepository.findById(id)
+                .orElseThrow(() -> new ProductNotFoundException("Product with id " + id + " not found"));
 
-    @Override
-    public BigDecimal calculateFinalPrice(Product product) {
+        if (product.getMaxRetailPrice() < 0) {
+            throw new IllegalArgumentException("Product price must not be negative");
+        }
+        if (product.getDiscountPercentage() < 0 || product.getDiscountPercentage() > 100) {
+            throw new IllegalArgumentException("Discount percentage must be between 0 and 100");
+        }
+
         BigDecimal originalPrice = BigDecimal.valueOf(product.getMaxRetailPrice());
-        BigDecimal discountPercentage = BigDecimal.valueOf(product.getDiscountPercentage());
+        BigDecimal discount = BigDecimal.valueOf(product.getDiscountPercentage());
 
-        BigDecimal discountAmount = originalPrice.multiply(discountPercentage)
+        BigDecimal discountAmount = originalPrice.multiply(discount)
                 .divide(BigDecimal.valueOf(100), 2, RoundingMode.HALF_UP);
 
         return originalPrice.subtract(discountAmount);
     }
 
     @Override
-    public List<Product> getProductsManufacturedAfter(int year) {
-        return productRepository.findAll()
-                .stream()
-                .filter(product -> product.getManufacturedYear() > year)
+    public List<ProductDto> getProductsManufacturedAfter(int year) {
+        return productRepository.findByManufacturedYearAfter(year)
+                .stream().map(productMapper::toDto)
                 .toList();
     }
 
     @Override
-    public List<Product> getAvailableProductsWithPriceGreaterThan(double price) {
-        return productRepository.findAll()
-                .stream()
-                .filter(product -> product.getMaxRetailPrice() > price)
+    public List<ProductDto> getAvailableProductsWithPriceGreaterThan(double price) {
+        return productRepository.findByIsAvailableTrueAndMaxRetailPriceGreaterThan(price)
+                .stream().map(productMapper::toDto)
                 .toList();
     }
 
     @Override
     public Map<String, Long> countProductsByCategory() {
-        return productRepository.findAll()
+        return productRepository.findProductCountByCategory()
                 .stream()
-                .collect(Collectors.groupingBy(Product::getCategory, Collectors.counting()));
+                .collect(Collectors.toMap(
+                        row -> (String) row[0],
+                        row -> (Long) row[1]
+                ));
     }
 
     @Override
-    public Map<String, List<Product>> groupProductsByCategory() {
-        return productRepository.findAll()
+    public Map<String, List<Product>> getProductsGroupedByCategory() {
+        return productRepository.findAllProductsByCategory()
                 .stream()
-                .collect(Collectors.groupingBy(Product::getCategory, Collectors.toList()));
+                .collect(Collectors.groupingBy(Product::getCategory));
     }
 
     @Override
-    public Map<String, List<Product>> groupProductsByCompany() {
-        return productRepository.findAll()
+    public Map<String, List<Product>> getProductsGroupedByCompany() {
+        return productRepository.findAllProductsByCompany()
                 .stream()
-                .collect(Collectors.groupingBy(Product::getCompany, Collectors.toList()));
+                .collect(Collectors.groupingBy(Product::getCompany));
     }
 
     @Override
     public Map<Boolean, List<Product>> partitionByAvailability() {
-        return productRepository.findAll()
+        return productRepository.findAllOrderByAvailability()
                 .stream()
                 .collect(Collectors.partitioningBy(Product::isAvailable));
     }
 
     @Override
-    public Product getMaxPricedProduct() {
-        return productRepository.findAll().stream()
-                .max(Comparator.comparing(Product::getMaxRetailPrice))
-                .orElseThrow(() -> new ProductNotFoundException("No products available"));
+    public Optional<Product> getMostExpensiveProduct() {
+        return productRepository.findTopByOrderByMaxRetailPriceDesc();
     }
 
     @Override
-    public Product getMinPricedProduct() {
-        return productRepository.findAll().stream()
-                .min(Comparator.comparingInt(Product::getMaxRetailPrice))
-                .orElseThrow(() -> new ProductNotFoundException("No products available"));
+    public Optional<Product> getLeastExpensiveProduct() {
+        return productRepository.findTopByOrderByMaxRetailPriceAsc();
     }
 
     @Override
-    public Optional<Product> getProductById(int id) {
-        return productRepository.findById(id);
-    }
-
-    @Override
-    public Map<Integer, Product> getProductMapById() {
-        return productRepository.findAll()
+    public Map<Integer, Product> getProductMapById(int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        return productRepository.findAll(pageable)
                 .stream()
-                .collect(Collectors.toMap(Product::getId, Function.identity()));
+                .collect(Collectors.toMap(
+                        Product::getId,
+                        Function.identity()
+                ));
     }
 
     @Override
     public Map<String, BigDecimal> getAveragePriceByCategory() {
-        return productRepository.findAll()
-                .stream()
-                .collect(Collectors.groupingBy(
-                        Product::getCategory,
-                        Collectors.collectingAndThen(
-                                Collectors.averagingInt(Product::getMaxRetailPrice),
-                                //BigDecimal::valueOf
-                                avg -> BigDecimal.valueOf(avg).setScale(2, RoundingMode.HALF_UP)
-                        )
+        return productRepository.findAveragePriceByCategory()
+                .stream().collect(Collectors.toMap(
+                        row -> (String) row[0],
+                        row -> BigDecimal.valueOf((Double) row[1])
                 ));
     }
 
     @Override
     public Map<String, List<Product>> getTopThreeMostExpensiveProductsByCategory() {
-        return productRepository.findAll()
-                .stream()
-                .collect(Collectors.groupingBy(Product::getCategory, Collectors.collectingAndThen(
-                        Collectors.toList(), list -> list.stream()
-                                .sorted(Comparator.comparingInt(Product::getMaxRetailPrice).reversed())
-                                .limit(3)
-                                .toList()
-                )));
+        return productRepository.findTopThreeMostExpensiveProductsByCategory()
+                .stream().collect(Collectors.groupingBy(Product::getCategory));
     }
 
 

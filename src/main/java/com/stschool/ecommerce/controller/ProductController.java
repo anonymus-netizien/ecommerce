@@ -1,12 +1,10 @@
 package com.stschool.ecommerce.controller;
 
-import com.stschool.ecommerce.model.Product;
+import com.stschool.ecommerce.entity.Product;
 import com.stschool.ecommerce.service.ProductService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/v1/products")
@@ -92,7 +90,7 @@ public class ProductController {
         return ResponseEntity.ok(productService.getDistinctCategories());
     }
 
-    @GetMapping("/count/available")
+    @GetMapping("/count")
     public ResponseEntity<?> getTotalProductsCount() {
         return ResponseEntity.ok(productService.getTotalProductsCount());
     }
@@ -120,8 +118,8 @@ public class ProductController {
         return ResponseEntity.ok(productService.getProductsSortedByNameDesc());
     }
 
-    @GetMapping("/top-expensive")
-    public ResponseEntity<?> getTopNMostExpensiveProducts(@RequestParam int limit) {
+    @GetMapping("/top-expensive/{limit}")
+    public ResponseEntity<?> getTopNMostExpensiveProducts(@PathVariable int limit) {
         if (limit <= 0) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Limit must be greater than zero");
         }
@@ -134,25 +132,16 @@ public class ProductController {
     }
 
     @GetMapping("/inventory-value")
-    public ResponseEntity<?> calculateTotalInventoryValue() {
-        return ResponseEntity.ok(productService.calculateTotalInventoryValue());
+    public ResponseEntity<?> getTotalInventoryValue() {
+        return ResponseEntity.ok(productService.getTotalInventoryValue());
     }
 
-    @PostMapping("/final-price")
-    public ResponseEntity<?> calculateFinalPrice(@RequestBody Product product) {
-        if (product == null) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Product must not be null");
+    @GetMapping("/final-price/{id}")
+    public ResponseEntity<?> calculateFinalPrice(@PathVariable int id) {
+        if (id <= 0) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Product id must be greater than zero");
         }
-        if (product.getMaxRetailPrice() < 0) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Product price must not be negative");
-        }
-        if (product.getDiscountPercentage() < 0) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Discount percentage must not be negative");
-        }
-        if (product.getDiscountPercentage() > 100) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Discount percentage must not be greater than 100");
-        }
-        return ResponseEntity.ok(productService.calculateFinalPrice(product));
+        return ResponseEntity.ok(productService.calculateFinalPrice(id));
     }
 
     @GetMapping("/average-price/by-category")
@@ -167,12 +156,12 @@ public class ProductController {
 
     @GetMapping("/grouped/by-category")
     public ResponseEntity<?> getProductsGroupedByCategory() {
-        return ResponseEntity.ok(productService.groupProductsByCategory());
+        return ResponseEntity.ok(productService.getProductsGroupedByCategory());
     }
 
     @GetMapping("/grouped/by-company")
     public ResponseEntity<?> getProductsGroupedByCompany() {
-        return ResponseEntity.ok(productService.groupProductsByCompany());
+        return ResponseEntity.ok(productService.getProductsGroupedByCompany());
     }
 
     @GetMapping("/partitioned/by-availability")
@@ -182,12 +171,12 @@ public class ProductController {
 
     @GetMapping("/highest-price")
     public ResponseEntity<?> getMaxPricedProduct() {
-        return ResponseEntity.ok(productService.getMaxPricedProduct());
+        return ResponseEntity.ok(productService.getMostExpensiveProduct());
     }
 
     @GetMapping("/lowest-price")
     public ResponseEntity<?> getMinPricedProduct() {
-        return ResponseEntity.ok(productService.getMinPricedProduct());
+        return ResponseEntity.ok(productService.getLeastExpensiveProduct());
     }
 
     @GetMapping("/first")
@@ -195,24 +184,9 @@ public class ProductController {
         return ResponseEntity.ok(productService.findFirstProduct());
     }
 
-    @GetMapping("/optional/{id}")
-    public ResponseEntity<?> getProductByIdOptional(@PathVariable int id) {
-        try {
-            Optional<Product> product = productService.getProductById(id);
-            if (product.isEmpty()) {
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Product with id " + id + " not found");
-            }
-            return ResponseEntity.ok(product.get());
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
-        }
-    }
-
-    @GetMapping("/map/by-id")
-    public ResponseEntity<?> getProductMapById() {
-        return ResponseEntity.ok(productService.getProductMapById());
+    @GetMapping("/map-by-id")
+    public ResponseEntity<?> getProductMapById(@RequestParam int page, @RequestParam int size) {
+        return ResponseEntity.ok(productService.getProductMapById(page, size));
     }
 
 }

@@ -1,8 +1,9 @@
 package com.stschool.ecommerce.service;
 
+import com.stschool.ecommerce.dto.ProductDto;
+import com.stschool.ecommerce.entity.Product;
 import com.stschool.ecommerce.exception.ProductExistsException;
 import com.stschool.ecommerce.exception.ProductNotFoundException;
-import com.stschool.ecommerce.model.Product;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -22,13 +23,13 @@ public interface ProductService {
     void delete(int id) throws ProductNotFoundException;
 
     //Get all available products based on availability
-    List<Product> getAllProductsByAvailability(boolean isAvailable);
+    List<ProductDto> getAllProductsByAvailability(boolean isAvailable);
 
     //Get all products belonging to a given category
-    List<Product> getProductsByCategory(String category);
+    List<ProductDto> getProductsByCategory(String category);
 
     //Get all products with price greater than a given value
-    List<Product> getProductsByPriceGreaterThan(int price);
+    List<ProductDto> getProductsByPriceGreaterThan(int price);
 
     //Get names of all products
     List<String> getAllProductNames();
@@ -49,38 +50,38 @@ public interface ProductService {
     List<String> getDistinctCategories();
 
     //Get top N most expensive products
-    List<Product> getTopNMostExpensiveProducts(int limit);
+    List<ProductDto> getTopNMostExpensiveProducts(int limit);
 
     //Sort products by price in ascending order
-    List<Product> getProductsSortedByPriceAsc();
+    List<ProductDto> getProductsSortedByPriceAsc();
 
     //Sort products by name in descending order
-    List<Product> getProductsSortedByNameDesc();
+    List<ProductDto> getProductsSortedByNameDesc();
 
     //Get total inventory value (sum of all product prices)
-    double calculateTotalInventoryValue();
+    BigDecimal getTotalInventoryValue();
 
     //Get total price after applying discounts
-    BigDecimal calculateFinalPrice(Product product);
+    BigDecimal calculateFinalPrice(int id);
 
     //Get all products manufactured after a given year
-    List<Product> getProductsManufacturedAfter(int year);
+    List<ProductDto> getProductsManufacturedAfter(int year);
 
     /*
     Get all products that are:
     - available
     - and price greater than a given value
      */
-    List<Product> getAvailableProductsWithPriceGreaterThan(double price);
+    List<ProductDto> getAvailableProductsWithPriceGreaterThan(double price);
 
     //Count number of products in each category
     Map<String, Long> countProductsByCategory();
 
     //Group all products by category
-    Map<String, List<Product>> groupProductsByCategory();
+    Map<String, List<Product>> getProductsGroupedByCategory();
 
     //Group all products by company
-    Map<String, List<Product>> groupProductsByCompany();
+    Map<String, List<Product>> getProductsGroupedByCompany();
 
     /* Partition products into:
     - available
@@ -89,15 +90,13 @@ public interface ProductService {
     Map<Boolean, List<Product>> partitionByAvailability();
 
     //Find the most expensive product
-    Product getMaxPricedProduct();
+    Optional<Product> getMostExpensiveProduct();
 
     //Find the cheapest product
-    Product getMinPricedProduct();
+    Optional<Product> getLeastExpensiveProduct();
 
     //Create a Map of product ID to Product
-    Optional<Product> getProductById(int id);
-
-    Map<Integer, Product> getProductMapById();
+    Map<Integer, Product> getProductMapById(int page, int size);
 
     //Find the average price of products per category
     Map<String, BigDecimal> getAveragePriceByCategory();
