@@ -1,6 +1,6 @@
 package com.stschool.ecommerce.repository;
 
-import com.stschool.ecommerce.model.Customer;
+import com.stschool.ecommerce.entity.Customer;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

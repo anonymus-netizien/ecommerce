@@ -1,6 +1,6 @@
 package com.stschool.ecommerce.controller;
 
-import com.stschool.ecommerce.model.Customer;
+import com.stschool.ecommerce.entity.Customer;
 import com.stschool.ecommerce.model.LoginCredentials;
 import com.stschool.ecommerce.service.AuthService;
 import org.springframework.http.HttpStatus;

@@ -1,6 +1,6 @@
 package com.stschool.ecommerce.util;
 
-import com.stschool.ecommerce.model.Product;
+import com.stschool.ecommerce.entity.Product;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Component;
 

@@ -1,4 +1,4 @@
-package com.stschool.ecommerce.model;
+package com.stschool.ecommerce.entity;
 
 import com.stschool.ecommerce.enums.Gender;
 import com.stschool.ecommerce.enums.Membership;

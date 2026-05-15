@@ -1,9 +1,9 @@
 package com.stschool.ecommerce.service;
 
+import com.stschool.ecommerce.entity.Customer;
 import com.stschool.ecommerce.exception.CustomerExistsException;
 import com.stschool.ecommerce.exception.CustomerNotFoundException;
 import com.stschool.ecommerce.exception.InvalidCredentialsException;
-import com.stschool.ecommerce.model.Customer;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;

@@ -1,10 +1,10 @@
 package com.stschool.ecommerce.service;
 
+import com.stschool.ecommerce.entity.Customer;
 import com.stschool.ecommerce.enums.Membership;
 import com.stschool.ecommerce.enums.Status;
 import com.stschool.ecommerce.exception.CustomerExistsException;
 import com.stschool.ecommerce.exception.CustomerNotFoundException;
-import com.stschool.ecommerce.model.Customer;
 import com.stschool.ecommerce.repository.CustomerRepository;
 import org.springframework.stereotype.Service;
 

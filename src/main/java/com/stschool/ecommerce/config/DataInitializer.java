@@ -1,6 +1,6 @@
 package com.stschool.ecommerce.config;
 
-import com.stschool.ecommerce.model.Product;
+import com.stschool.ecommerce.entity.Product;
 import com.stschool.ecommerce.repository.ProductRepository;
 import com.stschool.ecommerce.util.CsvParser;
 import org.jspecify.annotations.NonNull;
